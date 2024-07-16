@@ -21,9 +21,11 @@ Clone the repository or download the script files.
 
 Open a terminal (or Command Prompt) and navigate to the directory containing the script files. Run the following command to install the necessary libraries:
 
+```
 npm install selenium-webdriver chromedriver
 npm install node-schedule
 npm install yargs
+```
 
 ### Step 4: Running the script
 
