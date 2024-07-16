@@ -31,11 +31,13 @@ To run the script, use the following command with the appropriate parameters:
 
 ```
 node auto-login.js --start-time "YYYY-MM-DDTHH:mm:ssZ" --duration "HH:MM" --email "your_email@example.com" --password "your_password"
-
 ```
 `--start-time`: Start time of the event in ISO format (UTC) (e.g., "2024-07-16T10:55:00Z")
+
 `--duration`: Duration of the event in HH:MM format (e.g., "03:00" for 3 hours)
+
 `--email`: Your email address for login
+
 `--password`: Your password for login
 
 #### Example
