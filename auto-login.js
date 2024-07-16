@@ -1,6 +1,41 @@
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const schedule = require('node-schedule');
+const yargs = require('yargs');
+
+// Define the command-line arguments using yargs
+const argv = yargs
+	.option('start-time', {
+		alias: 's',
+		description: 'Start time of the event in format YYYY-MM-DDTHH:mm:ssZ (UTC)',
+		type: 'string',
+		demandOption: true
+	})
+	.option('duration', {
+		alias: 'd',
+		description: 'Duration of the event in HH:MM format',
+		type: 'string',
+		demandOption: true
+	})
+	.option('email', {
+		alias: 'e',
+		description: 'Email address to log in',
+		type: 'string',
+		demandOption: true
+	})
+	.option('password', {
+		alias: 'p',
+		description: 'Password to log in',
+		type: 'string',
+		demandOption: true
+	})
+	.help()
+	.alias('help', 'h')
+	.argv;
+
+// Parse and convert the duration
+const durationParts = argv.duration.split(':');
+const durationInMs = (parseInt(durationParts[0], 10) * 60 * 60 * 1000) + (parseInt(durationParts[1], 10) * 60 * 1000);
 
 // Define all constant values
 const URL = 'https://na.wotblitz.com/en/tournaments/streams/528/#/active';
@@ -10,12 +45,8 @@ const XPATH_EMAIL_FIELD = '//*[@id="id_login"]';
 const XPATH_PASSWORD_FIELD = '//*[@id="id_password"]';
 const XPATH_SUBMIT_BUTTON = '/html/body/div[1]/div/div[3]/div/div/div/div[1]/span/form/div/fieldset[2]/span[1]/button';
 const XPATH_COOKIE_BANNER = '/html/body/div[3]/div[2]/div/div[2]/button'; // XPath for the X button on the cookie banner
-const EMAIL = '';
-const PASSWORD = '';
-const SCHEDULED_TIME = '2024-07-16T10:55:00Z'; // Convert 07/16/2024 03:55:00 AM PST to UTC
-const LIVE_EVENT_DURATION_IN_MS = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
-async function main() {
+async function main(email, password, duration) {
 	let options = new chrome.Options();
 	options.addArguments('--start-maximized');
 
@@ -52,15 +83,15 @@ async function main() {
 		
 		// Step 5: Log in with email and password
 		await driver.wait(until.elementLocated(By.xpath(XPATH_EMAIL_FIELD)), 10000);
-		await driver.findElement(By.xpath(XPATH_EMAIL_FIELD)).sendKeys(EMAIL);
-		await driver.findElement(By.xpath(XPATH_PASSWORD_FIELD)).sendKeys(PASSWORD);
+		await driver.findElement(By.xpath(XPATH_EMAIL_FIELD)).sendKeys(email);
+		await driver.findElement(By.xpath(XPATH_PASSWORD_FIELD)).sendKeys(password);
 
 		// Step 6: Click the submit button
 		await driver.wait(until.elementIsVisible(driver.findElement(By.xpath(XPATH_SUBMIT_BUTTON))), 10000); // Ensure the button is visible
 		await driver.findElement(By.xpath(XPATH_SUBMIT_BUTTON)).click();
 
 		// Keep the browser tab open until the end of the live event
-		await driver.sleep(LIVE_EVENT_DURATION_IN_MS);
+		await driver.sleep(duration);
 
 	} finally {
 		// Close the browser after the event
@@ -69,8 +100,8 @@ async function main() {
 }
 
 // Schedule the job
-const date = new Date(SCHEDULED_TIME);
+const date = new Date(argv.startTime);
 schedule.scheduleJob(date, function(){
 	console.log('Starting the automated login process...');
-	main().catch(console.error);
+	main(argv.email, argv.password, durationInMs).catch(console.error);
 });
