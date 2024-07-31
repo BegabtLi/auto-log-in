@@ -38,7 +38,7 @@ const durationParts = argv.duration.split(':');
 const durationInMs = (parseInt(durationParts[0], 10) * 60 * 60 * 1000) + (parseInt(durationParts[1], 10) * 60 * 1000);
 
 // Define all constant values
-const URL = 'https://na.wotblitz.com/en/tournaments/streams/528/#/active';
+const URL = 'https://na.wotblitz.com/en/tournaments/streams/531/#/active';
 const XPATH_LOGIN_BUTTON = '/html/body/div[1]/div/div[3]/div[1]/p/button';
 const XPATH_REGION_SELECTION = '//*[@id="app"]/div/div[2]/div/div/div/div/div/div/ul/li[1]/a';
 const XPATH_EMAIL_FIELD = '//*[@id="id_login"]';
